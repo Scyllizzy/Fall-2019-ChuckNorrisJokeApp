@@ -32,13 +32,13 @@ button#get-joke:active {
     border-color: rgb(189, 122, 122);
 }
 
-#wrapper, div#joke-display {
+#wrapper, div#display {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-div#joke-display {
+div#display {
     margin-top: 5em;
 }
 
