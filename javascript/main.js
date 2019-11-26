@@ -15,8 +15,23 @@ function fetchJoke() {
     loaderImg.classList.add("loader");
     var request = new XMLHttpRequest();
     request.onreadystatechange = handleJokeResponse;
-    request.open("GET", "https://api.icndb.com/jokes/random");
+    var url = "https://api.icndb.com/jokes/random";
+    if (isCategorySelected()) {
+        url += "?limitTo=" + getSelectedCategory();
+    }
+    request.open("GET", url);
     request.send();
+}
+function isCategorySelected() {
+    var selIndex = document.getElementById("cat-list").selectedIndex;
+    if (selIndex > 0) {
+        return true;
+    }
+    return false;
+}
+function getSelectedCategory() {
+    var index = document.getElementById("cat-list").selectedIndex;
+    return document.getElementById("cat-list").options[index].text;
 }
 function handleJokeResponse() {
     var request = this;
@@ -31,7 +46,7 @@ function handleJokeResponse() {
 }
 function displayJoke(joke) {
     document.getElementById("joke-display").innerHTML = joke.joke;
-    document.getElementById("joke-id").innerHTML = joke.id.toString();
+    document.getElementById("joke-id").innerHTML = "ID: " + joke.id.toString();
     var categorieList = document.getElementById("categories");
     categorieList.innerHTML = "";
     for (var i = 0; i < joke.categories.length; i++) {
@@ -57,7 +72,16 @@ function populateCategories() {
         if (this.readyState == 4 && this.status == 200) {
             var categories = JSON.parse(this.responseText).value;
             console.log(categories);
+            populateCategoryDropdown(categories);
         }
     };
     request.send();
+}
+function populateCategoryDropdown(categories) {
+    var list = document.getElementById("cat-list");
+    for (var i = 0; i < categories.length; i++) {
+        var option = document.createElement("option");
+        option.text = categories[i];
+        list.appendChild(option);
+    }
 }

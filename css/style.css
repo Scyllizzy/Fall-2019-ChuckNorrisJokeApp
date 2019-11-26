@@ -52,6 +52,12 @@ div#category-display {
     margin-left: 45%;
 }
 
+select#cat-list {
+    position: fixed;
+    top: 27em;
+    left: 43em;
+}
+
 #loader {
     display: none;
 }

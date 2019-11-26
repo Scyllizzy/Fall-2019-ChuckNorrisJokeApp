@@ -36,10 +36,34 @@ function fetchJoke() {
     let request = new XMLHttpRequest();
     request.onreadystatechange = handleJokeResponse;
 
+    let url = "https://api.icndb.com/jokes/random";
+
+    if (isCategorySelected()) {
+        url += "?limitTo=" + getSelectedCategory();
+    }
+
     //Set URL to send request
-    request.open("GET", "https://api.icndb.com/jokes/random");
+    request.open("GET", url);
     //Init request
     request.send();
+}
+
+function isCategorySelected():boolean {
+    let selIndex = (<HTMLSelectElement>document.getElementById("cat-list")).selectedIndex;
+
+    if (selIndex > 0) {
+        return true;
+    } 
+
+    return false;
+}
+
+/**
+ * Return the single category that is selected.
+ */
+function getSelectedCategory():string {
+    let index = (<HTMLSelectElement>document.getElementById("cat-list")).selectedIndex;
+    return (<HTMLSelectElement>document.getElementById("cat-list")).options[index].text
 }
 
 function handleJokeResponse() {
@@ -63,7 +87,7 @@ function handleJokeResponse() {
 function displayJoke(joke:ChuckNorrisJoke) {
     document.getElementById("joke-display").innerHTML = joke.joke;
 
-    document.getElementById("joke-id").innerHTML = joke.id.toString();
+    document.getElementById("joke-id").innerHTML = "ID: " + joke.id.toString();
 
     let categorieList = document.getElementById("categories");
     categorieList.innerHTML = ""; //Clear out categories from any previous joke.
@@ -97,11 +121,22 @@ function populateCategories() {
     request.open("GET", "https://api.icndb.com/categories");
 
     request.onreadystatechange = function() {
+        //Request has finished (4) successfully (200)
         if (this.readyState == 4 && this.status == 200) {
             let categories:string[] = JSON.parse(this.responseText).value;
             console.log(categories);
+            populateCategoryDropdown(categories);
         }
     }
 
     request.send();
+}
+
+function populateCategoryDropdown(categories:string[]):void {
+    let list = document.getElementById("cat-list");
+    for (let i = 0; i < categories.length; i++) {
+        let option = document.createElement("option");
+        option.text = categories[i];
+        list.appendChild(option); // Add <option> to the select
+    }
 }
